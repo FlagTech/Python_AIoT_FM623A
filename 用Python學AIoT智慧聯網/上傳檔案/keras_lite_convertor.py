@@ -5,6 +5,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
 import os
 
+__version__ = '1.0.2'
 # %%
 class Data_reader():
     def __init__(self, path_name, mode='categorical', label_name = None):
@@ -79,14 +80,18 @@ sup_activation = ['linear','relu','sigmoid','softmax']
 def save(model, path):
     arch = json.loads(model.to_json())
     model_dict = {}
+    hasInputLayer = False
     if arch['class_name'] == 'Sequential':
         layers = []
         o_layers = arch['config']['layers']
         for i,o_layer in enumerate(o_layers):
             layer = {}
             if i==0:
-                    layer['batch_input_shape'] = o_layer['config']['batch_input_shape']
-            if o_layer['class_name']=='Dense':
+                layer['batch_input_shape'] = o_layer['config']['batch_input_shape']
+            if o_layer['class_name']=='InputLayer':
+                hasInputLayer = True
+                layer['class_name'] = 'InputLayer'
+            elif o_layer['class_name']=='Dense':
                 layer['class_name'] = 'Dense'
                 layer['units'] = o_layer['config']['units']
                 acti_func = o_layer['config']['activation']
@@ -96,7 +101,7 @@ def save(model, path):
                     raise ValueError('invalid class of activation:'+acti_func)
 
                 weights = [0,0]
-                layer_weights = model.layers[i].get_weights()
+                layer_weights = model.layers[i-hasInputLayer].get_weights()
                 weights[0] = layer_weights[0].tolist()
                 if len(layer_weights)>1:
                     weights[1] = layer_weights[1].tolist()
@@ -116,7 +121,7 @@ def save(model, path):
                 else:
                     raise ValueError('invalid class of activation:'+acti_func)
                 weights = [0,0]
-                layer_weights = model.layers[i].get_weights()
+                layer_weights = model.layers[i-hasInputLayer].get_weights()
                 weights[0] = layer_weights[0].reshape((-1,layer_weights[0].shape[-1])).tolist()
                 if len(layer_weights)>1:
                     weights[1] = layer_weights[1].tolist()
