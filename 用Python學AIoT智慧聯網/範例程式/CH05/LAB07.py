@@ -52,13 +52,13 @@ while True:
     print(tem,end='   ')                      
     
     CHT_data=[{"id":"請填入中華電信感測器編號","value":[str(tem)]}]
-    
-    urequests.post(url_CHT,json=CHT_data,headers=headers)  
-    
+    r = urequests.post(url_CHT,json=CHT_data,headers=headers)
+    r.close()
     print("上傳完畢")
     
     if(tem>=37.5):   # 當體溫超過37.5度時, 傳LINE做警告
-        urequests.get(url_line+"?value1="+str(tem)) # 傳送至LINE
+        r = urequests.get(url_line+"?value1="+str(tem)) # 傳送至LINE
+        r.close()
         print("警告!!!發燒了!!!")
     
     data=0
