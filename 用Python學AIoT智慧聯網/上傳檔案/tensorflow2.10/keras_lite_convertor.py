@@ -5,10 +5,10 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
 import os
 
-__version__ = '1.0.3'
+__version__ = '1.0.2'
 # %%
 
-# 這是搭配 colab 目前 tensorflow 2.17 的版本
+# 這是搭配 tensorflow 2.10 的版本
 class Data_reader():
     def __init__(self, path_name, mode='categorical', label_name = None):
         self.path_name = path_name
@@ -89,7 +89,7 @@ def save(model, path):
         for i,o_layer in enumerate(o_layers):
             layer = {}
             if i==0:
-                layer['batch_input_shape'] = o_layer['config']['batch_shape']
+                layer['batch_input_shape'] = o_layer['config']['batch_input_shape']
             if o_layer['class_name']=='InputLayer':
                 hasInputLayer = True
                 layer['class_name'] = 'InputLayer'
